@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using ProductApi.Dtos;
 using ProductApi.Models;
 
 namespace ProductApi.Controllers;
@@ -32,6 +33,17 @@ public class ProductsController : ControllerBase
         }
     ];
 
+    private static ProductResponseDto ToResponseDto(Product product)
+    {
+        return new ProductResponseDto
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Price = product.Price,
+            Quantity = product.Quantity
+        };
+    }
+
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -63,6 +75,7 @@ public class ProductsController : ControllerBase
         var items = filteredProducts
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
+            .Select(ToResponseDto)
             .ToList();
 
         var response = new
@@ -82,9 +95,9 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProductResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GetById([FromRoute] int id)
+    public ActionResult<ProductResponseDto> GetById([FromRoute] int id)
     {
         var product = Products.FirstOrDefault(product => product.Id == id);
 
@@ -96,7 +109,7 @@ public class ProductsController : ControllerBase
             });
         }
 
-        return Ok(product);
+        return Ok(ToResponseDto(product));
     }
 
     [HttpPost]
