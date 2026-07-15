@@ -113,19 +113,30 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(Product), StatusCodes.Status201Created)]
-    public ActionResult<Product> Create([FromBody] Product product)
+    [ProducesResponseType(typeof(ProductResponseDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public ActionResult<ProductResponseDto> Create(
+        [FromBody] ProductCreateDto request)
     {
         var nextId = Products.Count == 0
             ? 1
             : Products.Max(existingProduct => existingProduct.Id) + 1;
 
-        product.Id = nextId;
+        var product = new Product
+        {
+            Id = nextId,
+            Name = request.Name,
+            Price = request.Price,
+            Quantity = request.Quantity
+        };
+
         Products.Add(product);
+
+        var response = ToResponseDto(product);
 
         return CreatedAtAction(
             nameof(GetById),
             new { id = product.Id },
-            product);
+            response);
     }
 }
