@@ -189,6 +189,19 @@ Accept: application/json
 
 Có thể gửi request trực tiếp trong IDE hỗ trợ file `.http` hoặc sử dụng Postman với cùng method và URL.
 
+## Continuous Integration
+
+Dự án sử dụng GitHub Actions để tự động kiểm tra source code khi push lên `main`, các branch `feature/**` hoặc khi tạo Pull Request vào `main`.
+
+Workflow CI được khai báo tại `.github/workflows/ci.yml` và thực hiện các bước:
+
+1. Checkout source code.
+2. Cài đặt .NET 8 SDK.
+3. Restore dependency từ `ProductApi.sln`.
+4. Build solution với cấu hình Release.
+
+CI giúp xác nhận dự án có thể restore và build trên một máy Linux sạch, không chỉ trên máy phát triển local.
+
 ## Kết quả chạy Health endpoint
 
 ![Kết quả GET health endpoint](docs/images/day01-health-endpoint.png)
@@ -228,6 +241,7 @@ Có thể gửi request trực tiếp trong IDE hỗ trợ file `.http` hoặc s
 - [x] Test endpoint bằng Swagger.
 - [x] Test endpoint bằng file `.http`.
 - [x] Lưu ảnh kết quả Health endpoint.
+- [x] Cấu hình GitHub Actions CI để restore và build dự án.
 
 ## Báo cáo Day 1
 
@@ -240,6 +254,7 @@ Có thể gửi request trực tiếp trong IDE hỗ trợ file `.http` hoặc s
 - Hoàn thành mini challenge `GET /api/info`.
 - Tạo file `.http` để test hai endpoint.
 - Build bằng SDK 8 và SDK 10 đều đạt `0 Warning(s)`, `0 Error(s)`.
+- Cấu hình GitHub Actions CI để tự động restore và build Release bằng .NET 8 SDK.
 - Chia thay đổi thành các commit nhỏ theo Conventional Commits.
 
 ### Lỗi đã gặp
