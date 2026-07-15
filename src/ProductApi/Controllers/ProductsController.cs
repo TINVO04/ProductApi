@@ -98,4 +98,21 @@ public class ProductsController : ControllerBase
 
         return Ok(product);
     }
+
+    [HttpPost]
+    [ProducesResponseType(typeof(Product), StatusCodes.Status201Created)]
+    public ActionResult<Product> Create([FromBody] Product product)
+    {
+        var nextId = Products.Count == 0
+            ? 1
+            : Products.Max(existingProduct => existingProduct.Id) + 1;
+
+        product.Id = nextId;
+        Products.Add(product);
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = product.Id },
+            product);
+    }
 }
