@@ -1,0 +1,9 @@
+@ProductApi_HostAddress = https://localhost:7005
+
+### Check API health
+GET {{ProductApi_HostAddress}}/api/health
+Accept: application/json
+
+### Get project information
+GET {{ProductApi_HostAddress}}/api/info
+Accept: application/json
