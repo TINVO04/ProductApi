@@ -80,4 +80,22 @@ public class ProductsController : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult GetById([FromRoute] int id)
+    {
+        var product = Products.FirstOrDefault(product => product.Id == id);
+
+        if (product is null)
+        {
+            return NotFound(new
+            {
+                message = $"Product with id {id} was not found."
+            });
+        }
+
+        return Ok(product);
+    }
 }
