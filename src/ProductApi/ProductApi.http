@@ -7,3 +7,30 @@ Accept: application/json
 ### Get project information
 GET {{ProductApi_HostAddress}}/api/info
 Accept: application/json
+
+### Get product list - first page
+GET {{ProductApi_HostAddress}}/api/products?page=1
+Accept: application/json
+
+### Search products by name
+GET {{ProductApi_HostAddress}}/api/products?search=smart&page=1
+Accept: application/json
+
+### Get product detail - found
+GET {{ProductApi_HostAddress}}/api/products/2
+Accept: application/json
+
+### Get product detail - not found
+GET {{ProductApi_HostAddress}}/api/products/999
+Accept: application/json
+
+### Create a product
+POST {{ProductApi_HostAddress}}/api/products
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Keyboard",
+  "price": 75.5,
+  "quantity": 15
+}
