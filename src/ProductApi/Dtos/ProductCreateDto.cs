@@ -15,6 +15,8 @@ public class ProductCreateDto
         typeof(decimal),
         "0.01",
         "79228162514264337593543950335",
+        ParseLimitsInInvariantCulture = true,
+        ConvertValueInInvariantCulture = true,
         ErrorMessage = "Price must be greater than 0.")]
     public decimal Price { get; set; }
 
