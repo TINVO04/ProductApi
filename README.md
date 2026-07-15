@@ -13,7 +13,7 @@ Mục tiêu của dự án là xây dựng Product API theo từng ngày, bắt 
 - Cấu hình Swagger/OpenAPI.
 - Tạo endpoint kiểm tra trạng thái API: `GET /api/health`.
 - Hoàn thành mini challenge: `GET /api/info`.
-- Test API bằng Swagger và file `.http`.
+- Test API bằng Swagger, file `.http` và Postman.
 
 ## Công nghệ sử dụng
 
@@ -22,6 +22,7 @@ Mục tiêu của dự án là xây dựng Product API theo từng ngày, bắt 
 - C#
 - Swashbuckle.AspNetCore
 - Swagger/OpenAPI
+- Postman
 - Git và GitHub
 
 ## Yêu cầu môi trường
@@ -30,6 +31,7 @@ Cài đặt các công cụ sau trước khi chạy dự án:
 
 - .NET SDK 8.x (khuyến nghị để build và chạy đúng môi trường LTS của dự án)
 - Git
+- Postman (để import và chạy collection kiểm thử)
 - Visual Studio 2022, JetBrains Rider hoặc Visual Studio Code
 
 Kiểm tra phiên bản .NET SDK:
@@ -46,7 +48,10 @@ Dự án target `net8.0` và không khóa một patch SDK cụ thể bằng `glo
 ProductApi/
 ├── docs/
 │   └── images/
-│       └── day01-health-endpoint.png
+│       ├── day01-health-endpoint.png
+│       └── day01-postman-runner.png
+├── postman/
+│   └── ProductApi-Week5-Day1.postman_collection.json
 ├── src/
 │   └── ProductApi/
 │       ├── Controllers/
@@ -187,7 +192,29 @@ GET https://localhost:7005/api/info
 Accept: application/json
 ```
 
-Có thể gửi request trực tiếp trong IDE hỗ trợ file `.http` hoặc sử dụng Postman với cùng method và URL.
+Có thể gửi request trực tiếp trong IDE hỗ trợ file `.http`.
+
+## Test bằng Postman
+
+Collection kiểm thử được lưu tại `postman/ProductApi-Week5-Day1.postman_collection.json` theo schema Postman Collection v2.1.
+
+Cách chạy collection:
+
+1. Khởi động API bằng HTTPS tại `https://localhost:7005`.
+2. Mở Postman và chọn **Import**.
+3. Import file `postman/ProductApi-Week5-Day1.postman_collection.json`.
+4. Mở collection **ProductApi - Week 5 Day 1** và chọn **Run**.
+5. Chạy toàn bộ hai request trong Collection Runner.
+
+Collection sử dụng biến dùng chung `baseUrl` với giá trị mặc định `https://localhost:7005` và kiểm tra:
+
+- HTTP status code là `200`.
+- Response có content type JSON.
+- Response chứa các trường bắt buộc của từng endpoint.
+
+Kết quả Collection Runner: `2` request, `6` test passed, `0` failed và `0` error.
+
+![Kết quả Postman Collection Runner](docs/images/day01-postman-runner.png)
 
 ## Continuous Integration
 
@@ -240,7 +267,8 @@ CI giúp xác nhận dự án có thể restore và build trên một máy Linux
 - [x] Tạo `GET /api/info`.
 - [x] Test endpoint bằng Swagger.
 - [x] Test endpoint bằng file `.http`.
-- [x] Lưu ảnh kết quả Health endpoint.
+- [x] Tạo và chạy Postman collection với `6/6` test passed.
+- [x] Lưu ảnh kết quả Health endpoint và Postman Collection Runner.
 - [x] Cấu hình GitHub Actions CI để restore và build dự án.
 
 ## Báo cáo Day 1
@@ -253,6 +281,8 @@ CI giúp xác nhận dự án có thể restore và build trên một máy Linux
 - Tạo và test endpoint `GET /api/health`.
 - Hoàn thành mini challenge `GET /api/info`.
 - Tạo file `.http` để test hai endpoint.
+- Tạo Postman collection gồm hai request và sáu test assertion.
+- Chạy Collection Runner đạt `6/6` test passed và lưu ảnh kết quả.
 - Build bằng SDK 8 và SDK 10 đều đạt `0 Warning(s)`, `0 Error(s)`.
 - Cấu hình GitHub Actions CI để tự động restore và build Release bằng .NET 8 SDK.
 - Chia thay đổi thành các commit nhỏ theo Conventional Commits.
