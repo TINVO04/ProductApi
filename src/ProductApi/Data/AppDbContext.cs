@@ -25,6 +25,11 @@ public class AppDbContext : DbContext
         productEntity.HasKey(product => product.Id);
 
         productEntity
+            .Property(product => product.Id)
+            .UseIdentityByDefaultColumn()
+            .HasIdentityOptions(startValue: 4);
+
+        productEntity
             .Property(product => product.Name)
             .HasColumnType("citext")
             .HasMaxLength(100)
