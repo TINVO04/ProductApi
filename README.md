@@ -584,9 +584,9 @@ CI giúp xác nhận dự án có thể restore và build trên một máy Linux
 - [x] Newman đạt `22/22` assertions, `0` failed.
 - [x] Viết README API endpoint Day 5.
 - [x] Tạo checklist review Pull Request.
-- [x] Tạo kịch bản video demo CRUD khoảng 5 phút.
+- [x] Tạo kịch bản demo CRUD khoảng 5 phút để tham khảo.
 - [x] Postman GUI Runner đạt `22/22` assertions và đã lưu ảnh bằng chứng Day 5.
-- [ ] Quay hoặc cung cấp link video demo CRUD thực tế.
+- [x] Video demo không thực hiện theo quyết định phạm vi nộp; sử dụng collection, Newman và ảnh Postman GUI làm bằng chứng kiểm thử.
 - [ ] Review, tạo và merge Pull Request Day 5.
 
 ## Báo cáo Day 1
@@ -753,5 +753,4 @@ CI giúp xác nhận dự án có thể restore và build trên một máy Linux
 
 ### Phần tiếp tục để hoàn tất sản phẩm nộp Day 5
 
-- Quay video demo CRUD thực tế khoảng 5 phút theo kịch bản; không ghi video là hoàn thành trước khi file hoặc link tồn tại.
 - Push branch, chờ GitHub Actions, review theo checklist, tạo Pull Request và merge vào `main`.
