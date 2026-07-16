@@ -1,0 +1,505 @@
+{
+  "info": {
+    "_postman_id": "c8e4f1a2-3b5d-4c6e-9f7a-1d2e3f4a5b6c",
+    "name": "ProductApi - Week 5 Day 3",
+    "description": "Day 3 tests for DTO contracts, DataAnnotations validation, manual mapping, POST create and PUT update.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Product Valid",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Response is JSON\", function () {",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\"))",
+              "        .to.include(\"application/json\");",
+              "});",
+              "",
+              "pm.test(\"Location header points to created product\", function () {",
+              "    const response = pm.response.json();",
+              "    const location = pm.response.headers.get(\"Location\");",
+              "",
+              "    pm.expect(response.id).to.be.a(\"number\").and.to.be.above(0);",
+              "    pm.expect(location).to.be.a(\"string\");",
+              "    pm.expect(location.toLowerCase())",
+              "        .to.include(`/api/products/${response.id}`);",
+              "});",
+              "",
+              "pm.test(\"Created product matches response DTO contract\", function () {",
+              "    const response = pm.response.json();",
+              "",
+              "    pm.expect(response).to.have.property(\"id\");",
+              "    pm.expect(response.name).to.eql(\"Mechanical Keyboard\");",
+              "    pm.expect(response.price).to.eql(95.5);",
+              "    pm.expect(response.quantity).to.eql(0);",
+              "});",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Mechanical Keyboard\",\n  \"price\": 95.5,\n  \"quantity\": 0\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "products"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Invalid Name",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Response uses Problem Details JSON\", function () {",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\"))",
+              "        .to.include(\"application/problem+json\");",
+              "});",
+              "",
+              "pm.test(\"Validation errors include product name rule\", function () {",
+              "    const response = pm.response.json();",
+              "    const body = JSON.stringify(response);",
+              "",
+              "    pm.expect(response).to.have.property(\"errors\");",
+              "    pm.expect(body).to.match(/name|between 2 and 100|required/i);",
+              "});",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"A\",\n  \"price\": 10,\n  \"quantity\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "products"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Invalid Price",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Response uses Problem Details JSON\", function () {",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\"))",
+              "        .to.include(\"application/problem+json\");",
+              "});",
+              "",
+              "pm.test(\"Validation errors include price rule\", function () {",
+              "    const response = pm.response.json();",
+              "    const body = JSON.stringify(response);",
+              "",
+              "    pm.expect(response).to.have.property(\"errors\");",
+              "    pm.expect(body).to.match(/price|greater than 0/i);",
+              "});",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Mouse\",\n  \"price\": 0,\n  \"quantity\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "products"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Invalid Quantity",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Response uses Problem Details JSON\", function () {",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\"))",
+              "        .to.include(\"application/problem+json\");",
+              "});",
+              "",
+              "pm.test(\"Validation errors include quantity rule\", function () {",
+              "    const response = pm.response.json();",
+              "    const body = JSON.stringify(response);",
+              "",
+              "    pm.expect(response).to.have.property(\"errors\");",
+              "    pm.expect(body).to.match(/quantity|greater than or equal to 0/i);",
+              "});",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Mouse\",\n  \"price\": 10,\n  \"quantity\": -1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "products"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Product Found",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response is JSON\", function () {",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\"))",
+              "        .to.include(\"application/json\");",
+              "});",
+              "",
+              "pm.test(\"Updated product matches request body and keeps route id\", function () {",
+              "    const response = pm.response.json();",
+              "",
+              "    pm.expect(response.id).to.eql(2);",
+              "    pm.expect(response.name).to.eql(\"Smartphone Pro\");",
+              "    pm.expect(response.price).to.eql(999.99);",
+              "    pm.expect(response.quantity).to.eql(12);",
+              "});",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Smartphone Pro\",\n  \"price\": 999.99,\n  \"quantity\": 12\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products/2",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "products",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Product Not Found",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 404\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test(\"Response is JSON\", function () {",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\"))",
+              "        .to.include(\"application/json\");",
+              "});",
+              "",
+              "pm.test(\"Not found message includes product id\", function () {",
+              "    const response = pm.response.json();",
+              "",
+              "    pm.expect(response.message).to.be.a(\"string\");",
+              "    pm.expect(response.message).to.include(\"999\");",
+              "});",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Missing Product\",\n  \"price\": 10,\n  \"quantity\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products/999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "products",
+            "999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Invalid Price",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Response uses Problem Details JSON\", function () {",
+              "    pm.expect(pm.response.headers.get(\"Content-Type\"))",
+              "        .to.include(\"application/problem+json\");",
+              "});",
+              "",
+              "pm.test(\"Validation errors include price rule for update\", function () {",
+              "    const response = pm.response.json();",
+              "    const body = JSON.stringify(response);",
+              "",
+              "    pm.expect(response).to.have.property(\"errors\");",
+              "    pm.expect(body).to.match(/price|greater than 0/i);",
+              "});",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Laptop\",\n  \"price\": -5,\n  \"quantity\": 10\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "products",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://localhost:7005"
+    }
+  ]
+}
