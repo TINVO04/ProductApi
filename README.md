@@ -100,7 +100,8 @@ ProductApi/
 │       ├── day02-postman-runner-part2.png
 │       ├── day03-postman-runner-part1.png
 │       ├── day03-postman-runner-part2.png
-│       └── day04-postman-runner.png
+│       ├── day04-postman-runner.png
+│       └── day05-postman-runner.png
 ├── postman/
 │   ├── ProductApi-Week5-Day1.postman_collection.json
 │   ├── ProductApi-Week5-Day2.postman_collection.json
@@ -462,9 +463,11 @@ Collection gồm 11 request theo đúng thứ tự demo:
 10. Đọc lại Product đã xóa và nhận `404 Not Found`.
 11. Xóa ID không tồn tại và nhận `404 Not Found`.
 
-Collection tự sinh tên Product theo từng lượt chạy, lưu `createdProductId` từ response POST và tự xóa dữ liệu test. Newman đã chạy thành công `11` request và `22/22` assertions, không có request hoặc assertion thất bại.
+Collection tự sinh tên Product theo từng lượt chạy, lưu `createdProductId` từ response POST và tự xóa dữ liệu test. Newman và Postman GUI Runner đều đã chạy thành công `11` request và `22/22` assertions, không có request hoặc assertion thất bại.
 
-Bằng chứng Postman GUI Runner sẽ được bổ sung sau khi chạy collection trong ứng dụng Postman. Kịch bản video demo được lưu tại [`docs/day05-demo-script.md`](docs/day05-demo-script.md), còn checklist review PR được lưu tại [`docs/day05-pr-review-checklist.md`](docs/day05-pr-review-checklist.md).
+![Kết quả Postman Day 5](docs/images/day05-postman-runner.png)
+
+Kịch bản video demo được lưu tại [`docs/day05-demo-script.md`](docs/day05-demo-script.md), còn checklist review PR được lưu tại [`docs/day05-pr-review-checklist.md`](docs/day05-pr-review-checklist.md).
 
 ## Continuous Integration
 
@@ -582,7 +585,7 @@ CI giúp xác nhận dự án có thể restore và build trên một máy Linux
 - [x] Viết README API endpoint Day 5.
 - [x] Tạo checklist review Pull Request.
 - [x] Tạo kịch bản video demo CRUD khoảng 5 phút.
-- [ ] Chạy Postman GUI Runner và lưu ảnh bằng chứng Day 5.
+- [x] Postman GUI Runner đạt `22/22` assertions và đã lưu ảnh bằng chứng Day 5.
 - [ ] Quay hoặc cung cấp link video demo CRUD thực tế.
 - [ ] Review, tạo và merge Pull Request Day 5.
 
@@ -731,7 +734,7 @@ CI giúp xác nhận dự án có thể restore và build trên một máy Linux
 - Review trách nhiệm của Controller, Service, Repository và AppDbContext; source hiện tại đáp ứng yêu cầu nên không cần sửa C#.
 - Kiểm tra lỗi async phổ biến, DI lifetime và package vulnerability; chưa phát hiện vấn đề cần xử lý.
 - Tạo Postman collection CRUD Day 5 gồm 11 request, dùng ID động, kiểm tra validation/duplicate/not-found và tự dọn dữ liệu test.
-- Chạy Newman thành công 11 request và 22 assertions.
+- Chạy Newman và Postman GUI Runner thành công 11 request và 22 assertions; lưu ảnh bằng chứng Runner.
 - Tạo checklist review PR và kịch bản video demo CRUD khoảng 5 phút.
 - Cập nhật README với endpoint API, cách test và trạng thái sản phẩm Day 5.
 
@@ -750,6 +753,5 @@ CI giúp xác nhận dự án có thể restore và build trên một máy Linux
 
 ### Phần tiếp tục để hoàn tất sản phẩm nộp Day 5
 
-- Chạy collection trong Postman GUI Runner và lưu ảnh bằng chứng nếu sử dụng ảnh trong bài nộp.
 - Quay video demo CRUD thực tế khoảng 5 phút theo kịch bản; không ghi video là hoàn thành trước khi file hoặc link tồn tại.
 - Push branch, chờ GitHub Actions, review theo checklist, tạo Pull Request và merge vào `main`.
