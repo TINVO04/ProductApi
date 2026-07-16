@@ -139,4 +139,29 @@ public class ProductsController : ControllerBase
             new { id = product.Id },
             response);
     }
+
+    [HttpPut("{id:int}")]
+    [ProducesResponseType(typeof(ProductResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult<ProductResponseDto> Update(
+        [FromRoute] int id,
+        [FromBody] ProductUpdateDto request)
+    {
+        var product = Products.FirstOrDefault(product => product.Id == id);
+
+        if (product is null)
+        {
+            return NotFound(new
+            {
+                message = $"Product with id {id} was not found."
+            });
+        }
+
+        product.Name = request.Name;
+        product.Price = request.Price;
+        product.Quantity = request.Quantity;
+
+        return Ok(ToResponseDto(product));
+    }
 }
