@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ProductApi.Dtos;
-using ProductApi.Models;
+using ProductApi.Services;
 
 namespace ProductApi.Controllers;
 
@@ -8,48 +8,24 @@ namespace ProductApi.Controllers;
 [Route("api/[controller]")]
 public class ProductsController : ControllerBase
 {
-    private static readonly List<Product> Products =
-    [
-        new Product
-        {
-            Id = 1,
-            Name = "Laptop",
-            Price = 1500m,
-            Quantity = 10
-        },
-        new Product
-        {
-            Id = 2,
-            Name = "Smartphone",
-            Price = 800m,
-            Quantity = 20
-        },
-        new Product
-        {
-            Id = 3,
-            Name = "Headphones",
-            Price = 120m,
-            Quantity = 30
-        }
-    ];
+    private const int PageSize = 2;
 
-    private static ProductResponseDto ToResponseDto(Product product)
+    private readonly IProductService _productService;
+
+    public ProductsController(IProductService productService)
     {
-        return new ProductResponseDto
-        {
-            Id = product.Id,
-            Name = product.Name,
-            Price = product.Price,
-            Quantity = product.Quantity
-        };
+        _productService = productService;
     }
 
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(
+        typeof(ProductListResponseDto),
+        StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult GetAll(
+    public async Task<ActionResult<ProductListResponseDto>> GetAll(
         [FromQuery] string? search,
-        [FromQuery] int page = 1)
+        [FromQuery] int page = 1,
+        CancellationToken cancellationToken = default)
     {
         if (page < 1)
         {
@@ -59,109 +35,134 @@ public class ProductsController : ControllerBase
             });
         }
 
-        const int pageSize = 2;
-
-        IEnumerable<Product> query = Products;
-
-        if (!string.IsNullOrWhiteSpace(search))
-        {
-            query = query.Where(product =>
-                product.Name.Contains(
-                    search,
-                    StringComparison.OrdinalIgnoreCase));
-        }
-
-        var filteredProducts = query.ToList();
-        var items = filteredProducts
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(ToResponseDto)
-            .ToList();
-
-        var response = new
-        {
-            items,
-            pagination = new
-            {
-                page,
-                pageSize,
-                totalItems = filteredProducts.Count,
-                totalPages = (int)Math.Ceiling(
-                    filteredProducts.Count / (double)pageSize)
-            }
-        };
+        var response = await _productService.GetAllAsync(
+            search,
+            page,
+            PageSize,
+            cancellationToken);
 
         return Ok(response);
     }
 
     [HttpGet("{id:int}")]
-    [ProducesResponseType(typeof(ProductResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(
+        typeof(ProductResponseDto),
+        StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<ProductResponseDto> GetById([FromRoute] int id)
+    public async Task<ActionResult<ProductResponseDto>> GetById(
+        [FromRoute] int id,
+        CancellationToken cancellationToken)
     {
-        var product = Products.FirstOrDefault(product => product.Id == id);
+        var product = await _productService.GetByIdAsync(
+            id,
+            cancellationToken);
 
         if (product is null)
         {
-            return NotFound(new
-            {
-                message = $"Product with id {id} was not found."
-            });
+            return ProductNotFound(id);
         }
 
-        return Ok(ToResponseDto(product));
+        return Ok(product);
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(ProductResponseDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(
+        typeof(ProductResponseDto),
+        StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult<ProductResponseDto> Create(
-        [FromBody] ProductCreateDto request)
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<ProductResponseDto>> Create(
+        [FromBody] ProductCreateDto request,
+        CancellationToken cancellationToken)
     {
-        var nextId = Products.Count == 0
-            ? 1
-            : Products.Max(existingProduct => existingProduct.Id) + 1;
+        var result = await _productService.CreateAsync(
+            request,
+            cancellationToken);
 
-        var product = new Product
+        if (result.Status == ProductWriteStatus.DuplicateName)
         {
-            Id = nextId,
-            Name = request.Name,
-            Price = request.Price,
-            Quantity = request.Quantity
-        };
+            return DuplicateNameConflict(request.CategoryId);
+        }
 
-        Products.Add(product);
-
-        var response = ToResponseDto(product);
+        var product = result.Product
+            ?? throw new InvalidOperationException(
+                "The created product response was not available.");
 
         return CreatedAtAction(
             nameof(GetById),
             new { id = product.Id },
-            response);
+            product);
     }
 
     [HttpPut("{id:int}")]
-    [ProducesResponseType(typeof(ProductResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(
+        typeof(ProductResponseDto),
+        StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<ProductResponseDto> Update(
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<ProductResponseDto>> Update(
         [FromRoute] int id,
-        [FromBody] ProductUpdateDto request)
+        [FromBody] ProductUpdateDto request,
+        CancellationToken cancellationToken)
     {
-        var product = Products.FirstOrDefault(product => product.Id == id);
+        var result = await _productService.UpdateAsync(
+            id,
+            request,
+            cancellationToken);
 
-        if (product is null)
+        if (result.Status == ProductWriteStatus.NotFound)
         {
-            return NotFound(new
-            {
-                message = $"Product with id {id} was not found."
-            });
+            return ProductNotFound(id);
         }
 
-        product.Name = request.Name;
-        product.Price = request.Price;
-        product.Quantity = request.Quantity;
+        if (result.Status == ProductWriteStatus.DuplicateName)
+        {
+            return DuplicateNameConflict(request.CategoryId);
+        }
 
-        return Ok(ToResponseDto(product));
+        var product = result.Product
+            ?? throw new InvalidOperationException(
+                "The updated product response was not available.");
+
+        return Ok(product);
+    }
+
+    [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(
+        [FromRoute] int id,
+        CancellationToken cancellationToken)
+    {
+        var result = await _productService.DeleteAsync(
+            id,
+            cancellationToken);
+
+        if (result.Status == ProductWriteStatus.NotFound)
+        {
+            return ProductNotFound(id);
+        }
+
+        return NoContent();
+    }
+
+    private NotFoundObjectResult ProductNotFound(int id)
+    {
+        return NotFound(new
+        {
+            message = $"Product with id {id} was not found."
+        });
+    }
+
+    private ConflictObjectResult DuplicateNameConflict(
+        int categoryId)
+    {
+        return Conflict(new
+        {
+            message =
+                "A product with the same name already exists "
+                + $"in category {categoryId}."
+        });
     }
 }

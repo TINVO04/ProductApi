@@ -12,6 +12,12 @@ public class ProductUpdateDto
     public string Name { get; set; } = string.Empty;
 
     [Range(
+        1,
+        int.MaxValue,
+        ErrorMessage = "CategoryId must be greater than 0.")]
+    public int CategoryId { get; set; }
+
+    [Range(
         typeof(decimal),
         "0.01",
         "79228162514264337593543950335",
