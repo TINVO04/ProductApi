@@ -16,6 +16,8 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.HasPostgresExtension("citext");
+
         var productEntity = modelBuilder.Entity<Product>();
 
         productEntity.ToTable("Products");
@@ -24,6 +26,7 @@ public class AppDbContext : DbContext
 
         productEntity
             .Property(product => product.Name)
+            .HasColumnType("citext")
             .HasMaxLength(100)
             .IsRequired();
 
