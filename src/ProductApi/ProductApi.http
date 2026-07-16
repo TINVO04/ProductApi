@@ -34,3 +34,80 @@ Accept: application/json
   "price": 75.5,
   "quantity": 15
 }
+
+### Create product - valid
+POST {{ProductApi_HostAddress}}/api/products
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Mechanical Keyboard",
+  "price": 95.5,
+  "quantity": 0
+}
+
+### Create product - invalid name
+POST {{ProductApi_HostAddress}}/api/products
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "A",
+  "price": 10,
+  "quantity": 1
+}
+
+### Create product - invalid price
+POST {{ProductApi_HostAddress}}/api/products
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Mouse",
+  "price": 0,
+  "quantity": 1
+}
+
+### Create product - invalid quantity
+POST {{ProductApi_HostAddress}}/api/products
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Mouse",
+  "price": 10,
+  "quantity": -1
+}
+
+### Update product - found
+PUT {{ProductApi_HostAddress}}/api/products/2
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Smartphone Pro",
+  "price": 999.99,
+  "quantity": 12
+}
+
+### Update product - not found
+PUT {{ProductApi_HostAddress}}/api/products/999
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Missing Product",
+  "price": 10,
+  "quantity": 1
+}
+
+### Update product - invalid price
+PUT {{ProductApi_HostAddress}}/api/products/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Laptop",
+  "price": -5,
+  "quantity": 10
+}
